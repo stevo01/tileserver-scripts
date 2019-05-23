@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Expire hrb map by looking at exipred tiles in other map
+#
+
+TILEDIR=/var/lib/tirex/tiles
+
+OTHER=mapnikde
+
+HRB=mapnikhrb
+
+# roughly 10 years ago
+NOW=$(date +%s)
+OLD=$(( $NOW-315360000 ))
+
+# iterate over all files
+# if other tile mtime is older than 10 years
+# copy times to hrb tile
+cd $TILEDIR/$HRB
+for f in $(find ./  -type f); do
+  if [ -f $TILEDIR/$OTHER/$f ]; then
+    #echo $TILEDIR/$OTHER/$f
+    fdate=$(stat -c %Y $TILEDIR/$OTHER/$f)
+    if [ "$fdate" -lt "$OLD" ]; then
+      touch -m -r $TILEDIR/$OTHER/$f $TILEDIR/$HRB/$f
+    fi
+  fi
+done
+
