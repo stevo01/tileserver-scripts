@@ -67,7 +67,9 @@ if [ -f $MERGEDFILE ]
 then
    # something left over from last time
    echo "merging with existing diff"
-   mv $BASE/data/osmium-mc.stderr $BASE/data/osmium-mc.stderr.old
+   if [ -f $BASE/data/osmium-mc.stderr ]; then
+     mv $BASE/data/osmium-mc.stderr $BASE/data/osmium-mc.stderr.old
+   fi
    if osmium merge-changes --no-progress -s -o $MERGEDFILE-new.osc $THISFILE $MERGEDFILE 2>$BASE/data/osmium-mc.stderr
    then
       mv $MERGEDFILE-new.osc $MERGEDFILE
