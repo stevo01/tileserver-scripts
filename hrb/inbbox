@@ -36,6 +36,7 @@ def flush_out(str):
 
 parser = argparse.ArgumentParser(description='Apache Rewritemap cmd: check if tile url is inside given bounding box')
 parser.add_argument('-b','--bbox', nargs=4, type=float, required=True, help='bounding box')
+parser.add_argument('-m','--minz', type=int, required=True, help='minzoom (return false if zoom < minzoom)')
 args = parser.parse_args()
 
 bbox=[[args.bbox[0],args.bbox[1]],[args.bbox[2],args.bbox[3]]]
@@ -51,9 +52,12 @@ while sys.stdin:
     if len(res) != 1:
       flush_out("xNULL\n")
     else:
-      tcoor=TileToBBox(int(res[0][0]),int(res[0][1]),int(res[0][2]))
-      if ((tcoor[0][0] <= bbox[1][0]) and (tcoor[1][1] >= bbox[0][1]) and (tcoor[1][0] >= bbox[0][0]) and (tcoor[0][1] <= bbox[1][1])):
-        flush_out("TRUE\n")
+      if (int(res[0][0]) >= args.minz):
+        tcoor=TileToBBox(int(res[0][0]),int(res[0][1]),int(res[0][2]))
+        if ((tcoor[0][0] <= bbox[1][0]) and (tcoor[1][1] >= bbox[0][1]) and (tcoor[1][0] >= bbox[0][0]) and (tcoor[0][1] <= bbox[1][1])):
+          flush_out("TRUE\n")
+        else:
+          flush_out("FALSE\n")
       else:
         flush_out("FALSE\n")
   except:
