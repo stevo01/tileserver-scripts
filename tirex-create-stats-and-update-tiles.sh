@@ -21,6 +21,7 @@ OLDESTNUM=30000
 # maps that we want the statistics for
 MAPS="mapnikde"
 
+MINZOOM=5
 MAXZOOM=12
 
 #-----------------------------------------------------------------------------
@@ -68,7 +69,7 @@ find $DIR -type f -mtime +1 -name tiles-\* | xargs --no-run-if-empty rm
 
 for MAP in $MAPS; do    
     # check tile directory and create statistics
-    tirex-tiledir-check --list=$DIR/tiles-$DATE-$MAP.csv --stats=$DIR/tiles-$DATE-$MAP.stats -Z $MAXZOOM $MAP 
+    tirex-tiledir-check --list=$DIR/tiles-$DATE-$MAP.csv --stats=$DIR/tiles-$DATE-$MAP.stats -Z $MAXZOOM -z $MINZOOM $MAP 
 
     # link tiles.stats to newest statistics file
     rm -f $DIR/tiles-$MAP.stats
