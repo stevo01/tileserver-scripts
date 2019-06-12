@@ -52,7 +52,7 @@ DIR=/var/lib/tirex/stats
 
 DATE=`date +%FT%H`
 
-TILEDIR=/var/lib/tirex/tiles
+TILEDIR=/var/lib/tirex/tiles/
 
 echo "--------------------------------------"
 echo -n "Starting "
