@@ -43,15 +43,15 @@ COPY run.sh /replication/scripts
 COPY whichdiff.pl /replication/scripts
 COPY replicate-loop.sh /replication/scripts
 COPY determine_latest_osmid.sh /replication/scripts
+COPY initial-import.sh /replication/scripts
+
 
 RUN chmod +x /replication/scripts/*.sh
 RUN chmod +x /replication/scripts/*.pl
 RUN chown root:root /replication/scripts/*.sh
 RUN chown root:root /replication/scripts/*.pl
 
-
 RUN echo "*/5 * * * *   root    /replication/scripts/replicate-loop.sh\n" >> /etc/crontab
-
 
 # Start running
 ENTRYPOINT ["/replication/scripts/run.sh"]
