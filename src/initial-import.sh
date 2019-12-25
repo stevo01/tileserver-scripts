@@ -13,5 +13,5 @@ PG_DBNAME=gis
 PG_HOST=osmpsql
 
 echo $date
-osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -s -C16000 -S $STYLE --flat-nodes $FLATNODEFILE --hstore --tag-transform-script $LUA -p planet_osm_hstore $1
+osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME --create -G -s -C16000 -S $STYLE --flat-nodes $FLATNODEFILE --hstore --tag-transform-script $LUA -p planet_osm_hstore $1
 echo $date
