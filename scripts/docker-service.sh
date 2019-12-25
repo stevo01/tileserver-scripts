@@ -23,7 +23,7 @@ docker run \
 		run
 }
 
-function start() {
+function import() {
 docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
