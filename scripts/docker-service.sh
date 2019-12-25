@@ -10,7 +10,6 @@ function start() {
 docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
-		-e OSM2PGSQL_EXTRA_ARGS="--flat-nodes /nodes/flat_nodes.bin -C 4096" \
 		--restart unless-stopped \
 		--detach \
 		--memory=32G \
@@ -22,6 +21,23 @@ docker run \
 		-v $PWD/volumes/download:/replication/download \
 		$IMAGE_NAME \
 		run
+}
+
+function start() {
+docker run \
+		--name $IMAGE_NAME \
+		--rm=false \
+		--restart unless-stopped \
+		--detach \
+		--memory=32G \
+		--hostname osmdbutils \
+		--link osm-tileserver-db:osm-tileserver-db \
+		-v openstreetmap-flat:/nodes \
+		-v $PWD/volumes/transfer:/transfer \
+		-v $PWD/volumes/work:/replication/work \
+		-v $PWD/volumes/download:/replication/download \
+		$IMAGE_NAME \
+		import
 }
 
 function stop() {
@@ -45,6 +61,9 @@ case "$1" in
     stop
     start
     ;;
+	import)
+	    import
+		;;
   build)
     build
 	;;

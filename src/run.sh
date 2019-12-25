@@ -13,7 +13,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 if [ "$1" = "import" ]; then
-    exit 0
+  /replication/scripts/initial-import.sh /replication/download/planet-latest.osm.pbf
 fi
 
 if [ "$1" = "run" ]; then
