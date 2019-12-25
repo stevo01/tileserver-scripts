@@ -12,7 +12,7 @@ MINZOOM=13
 export PGPASSWORD=renderer
 PG_USER=renderer
 PG_DBNAME=gis
-PG_HOST=192.168.1.54
+PG_HOST=osmpsql
 
 LOGFILE=/replication/work/replication.log
 
