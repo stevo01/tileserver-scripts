@@ -1,6 +1,7 @@
 # review giggls tile server scripts
 
-This document describes how to use *giggls* tile server scripts and which modification are needed for usage on another server.
+This document describes how to use *giggls* tile server scripts and which
+modification are needed for usage on another server.
 
 ## Workflow
 +  initial import of osm database to PostgreSQL
