@@ -10,7 +10,6 @@ function start() {
 docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
-		--restart unless-stopped \
 		--detach \
 		--memory=32G \
 		--hostname osmdbutils \
@@ -27,7 +26,6 @@ function import() {
 docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
-		--restart unless-stopped \
 		--detach \
 		--memory=32G \
 		--hostname osmdbutils \
