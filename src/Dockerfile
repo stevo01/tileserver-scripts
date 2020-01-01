@@ -48,6 +48,7 @@ COPY whichdiff.pl /replication/scripts
 COPY replicate-loop.sh /replication/scripts
 COPY determine_latest_osmid.sh /replication/scripts
 COPY initial-import.sh /replication/scripts
+COPY create_indexes.sh /replication/scripts
 
 
 RUN chmod +x /replication/scripts/*.sh \

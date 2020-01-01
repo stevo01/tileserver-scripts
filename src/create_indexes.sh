@@ -15,7 +15,7 @@ function log_info {
     echo "[INFO ] $today $1" 2>&1 | tee -a $LOGFILE
 }
 
-loginfo "start create indexes"
+log_info "start create indexes"
 cd /replication/src/openstreetmap-carto
-scripts/indexes.py | -U $PG_USER -h $PG_HOST -d $PG_DBNAME 2>&1 | tee -a $LOGFILE
-loginfo "end create indexes"
+scripts/indexes.py | psql -U $PG_USER -h $PG_HOST -d $PG_DBNAME 2>&1 | tee -a $LOGFILE
+log_info "end create indexes"
