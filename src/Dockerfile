@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-pip \
     python3-setuptools \
     python-pip \
+    python-setuptools \
     cron \
     wget \
     curl \
