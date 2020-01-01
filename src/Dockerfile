@@ -9,13 +9,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3 \
     python3-pip \
     python3-setuptools \
+    python-pip \
     cron \
     wget \
     curl \
     npm \
     git \
     procps \
-    libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl devscripts \
     nano mc psmisc \
     postgresql-client \
     osm2pgsql  \
@@ -23,6 +23,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     osmium-tool \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/lib/python3-pyosmium/pyosmium-get-changes /usr/local/bin/pyosmium-get-changes
+
+RUN pip install pyYAML
+
 
 # Configure stylesheet
 RUN mkdir -p /replication/src
@@ -46,10 +49,10 @@ COPY determine_latest_osmid.sh /replication/scripts
 COPY initial-import.sh /replication/scripts
 
 
-RUN chmod +x /replication/scripts/*.sh
-RUN chmod +x /replication/scripts/*.pl
-RUN chown root:root /replication/scripts/*.sh
-RUN chown root:root /replication/scripts/*.pl
+RUN chmod +x /replication/scripts/*.sh \
+&& chmod +x /replication/scripts/*.pl \
+&& chown root:root /replication/scripts/*.sh \
+&& chown root:root /replication/scripts/*.pl
 
 RUN echo "*/5 * * * *   root    /replication/scripts/replicate-loop.sh\n" >> /etc/crontab
 
