@@ -15,6 +15,7 @@ docker run \
 		--hostname osmdbutils \
 		--link osm-tileserver-db:osm-tileserver-db \
 		-v openstreetmap-flat:/nodes \
+		-v openstreetmap-db:/var/lib/postgresql/11/main:ro \
 		-v $PWD/volumes/transfer:/transfer \
 		-v $PWD/volumes/work:/replication/work \
 		-v $PWD/volumes/download:/replication/download \
