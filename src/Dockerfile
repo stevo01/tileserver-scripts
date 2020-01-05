@@ -6,6 +6,7 @@ FROM debian:10
 
 # Install dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    pigz \
     python3 \
     python3-pip \
     python3-setuptools \
