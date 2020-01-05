@@ -19,6 +19,7 @@ docker run \
 		-v $PWD/volumes/transfer:/transfer \
 		-v $PWD/volumes/work:/replication/work \
 		-v $PWD/volumes/download:/replication/download \
+		-v $PWD/volumes/backup:/backup \
 		$IMAGE_NAME \
 		run
 }
