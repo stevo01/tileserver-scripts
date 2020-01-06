@@ -123,7 +123,7 @@ fi
 
 log_info "start osm2pgsql"
 
-if osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -a -s --number-processes=1 -C4000 -S $STYLE --flat-nodes $FLATNODEFILE -e $(($MINZOOM-3))-16 -o $EXPIRELOG --expire-bbox-size 20000 --hstore --tag-transform-script $LUA $MERGEDFILE >$BASE/data/osm2pgsql.stdout 2>$BASE/data/osm2pgsql.stderr
+if osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -a -s --number-processes=1 -C16000 -S $STYLE --flat-nodes $FLATNODEFILE -e $(($MINZOOM-3))-16 -o $EXPIRELOG --expire-bbox-size 20000 --hstore --tag-transform-script $LUA $MERGEDFILE >$BASE/data/osm2pgsql.stdout 2>$BASE/data/osm2pgsql.stderr
 then
    log_info "osm2pgsql passed"
    rm $MERGEDFILE
