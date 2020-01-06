@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     osm2pgsql  \
     python3-pyosmium \
     osmium-tool \
+    libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/lib/python3-pyosmium/pyosmium-get-changes /usr/local/bin/pyosmium-get-changes
 
