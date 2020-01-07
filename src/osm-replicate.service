@@ -3,9 +3,7 @@ Description=Call osm2pgsql replication script
 
 [Service]
 Type=simple
-User=tirex
-Group=tirex
+User=root
+Group=root
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"
-ExecStart=/usr/local/bin/replicate-loop.sh
-
-
+ExecStart=/replication/scripts/replicate-loop.sh

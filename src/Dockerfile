@@ -52,6 +52,8 @@ COPY determine_latest_osmid.sh /replication/scripts
 COPY initial-import.sh /replication/scripts
 COPY create_indexes.sh /replication/scripts
 COPY create_backup.sh /replication/scripts
+COPY osm-replicate.service /etc/systemd/system
+COPY osm-replicate.timer /etc/systemd/system
 
 RUN chmod +x /replication/scripts/*.sh \
 && chmod +x /replication/scripts/*.pl \

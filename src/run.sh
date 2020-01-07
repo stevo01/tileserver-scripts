@@ -3,6 +3,16 @@
 # set -x
 STOP_CONT="no"
 
+# handler for term signal
+function sighandler_TERM() {
+    echo "signal SIGTERM received\n"
+
+    #todo stop replicate-loop.sh
+    
+
+    STOP_CONT="yes"
+}
+
 if [ "$#" -ne 1 ]; then
     echo "usage: <import|update|run>"
     echo "commands:"
