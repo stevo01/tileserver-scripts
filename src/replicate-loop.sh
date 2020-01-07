@@ -3,12 +3,13 @@ set -x
 LANG=C
 
 BASE=/replication/work
+LOCKFILE=$BASE/data/replicate.lock
 FLATNODEFILE=/nodes/flat_nodes.bin
-EXPIRELOG=$BASE/expire.log
 SEQFILE=$BASE/data/sequence_file
 STYLE=/replication/src/openstreetmap-carto/openstreetmap-carto.style
 LUA=/replication/src/openstreetmap-carto/openstreetmap-carto.lua
-MINZOOM=13
+MINZOOM=14
+MAXZOOM=16
 LOGFILE=/replication/work/replication.log
 
 export PGPASSWORD=renderer
@@ -34,8 +35,6 @@ then
   log_error "error: sequence file $SEQFILE does not exist"
 fi
 
-LOCKFILE=$BASE/data/replicate.lock
-
 # check if lockfile excists
 if [ -f $LOCKFILE ]
 then
@@ -46,12 +45,15 @@ then
    if kill -0 $OTHERPID 2>/dev/null
    then
       # exit script if another instance if script is running
-      log_error "other process ($OTHERPID) active"
+      echo "other process ($OTHERPID) active"
+      exit 1
    fi
 fi
 
-# create lockfile
 log_info "bgn replication $(date)"
+
+# create lockfile
+echo $$ > $LOCKFILE
 
 # calculate and show lag (in minutes)
 START=`date +%s`
@@ -63,6 +65,9 @@ log_info "start update: osmosis replication is ${LAG} minutes behind upstream"
 
 THISFILE=$BASE/data/replicate-$START.osc
 MERGEDFILE=$BASE/data/merged.osc
+
+EXPIRELOG=$BASE/expire_$local_sequence.log
+OSMPGSQL_LOGFILE=$BASE/data/osm2pgsql_$local_sequence.stdout
 
 # make backup of the sequence file
 if cp $BASE/data/sequence_file $BASE/data/sequence_file.old
@@ -83,7 +88,7 @@ find $BASE/data/ -name replicate-\*.osc -mtime +0 | xargs rm -f
 #  $THISFILE: this file includes the osm data fetched by the script
 log_info "bgn: pyosmium-get-changes sequence=$(cat $SEQFILE)"
 pyosmium-get-changes -s 500 -f $SEQFILE -o $THISFILE
-log_info "end: pyosmium-get-changessequence=$(cat $SEQFILE)"
+log_info "end: pyosmium-get-changes sequence=$(cat $SEQFILE)"
 
 # check if the osm diff file excists
 if [ ! -f $THISFILE ]
@@ -123,7 +128,7 @@ fi
 
 log_info "start osm2pgsql"
 
-if osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -a -s --number-processes=1 -C16000 -S $STYLE --flat-nodes $FLATNODEFILE -e $(($MINZOOM-3))-16 -o $EXPIRELOG --expire-bbox-size 20000 --hstore --tag-transform-script $LUA $MERGEDFILE >$BASE/data/osm2pgsql.stdout 2>$BASE/data/osm2pgsql.stderr
+if osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -a -s --number-processes=1 -C16000 -S $STYLE --flat-nodes $FLATNODEFILE -e $MINZOOM-$MAXZOOM -o $EXPIRELOG --expire-bbox-size 20000 --hstore --tag-transform-script $LUA $MERGEDFILE 2>&1 | tee -a $OSMPGSQL_LOGFILE
 then
    log_info "osm2pgsql passed"
    rm $MERGEDFILE
