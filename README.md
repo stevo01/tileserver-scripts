@@ -1,44 +1,109 @@
-# Replication and tile expire scripts from German tileserver
+# scripts for open seamap tile src_tileserver
 
-This repository contains the scripts which are used on the German
-tileservers for database replication using pyosmium-get-changes and
-osm2pgsql. These scripts will also trigger the tile expire mechanism from
-the output created by osm2pgsql.
 
-The machines are currently running Debian GNU/Linux 10 (buster) and most of
-the software running there is available directly from the distribution.
+## build and start container
 
-Exceptions are:
+download compressed osm database  
+```
+cd src_tileserver_scripts/
+mkdir src_tileserver_scripts$ mkdir -p volumes/download
+wget -c https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf     -O volumes/download/planet-latest.osm.pbf
+wget -c https://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/pbf/planet-latest.osm.pbf.md5 -O volumes/download/planet-latest.osm.pbf.md5
+```
 
-* osml10n https://github.com/giggls/mapnik-german-l10n
-* tirex https://github.com/openstreetmap/tirex
-* libapache2-mod-tile https://github.com/openstreetmap/mod_tile/
+build and start container
+```
+cd src_tileserver_scripts/
+./scripts/docker-service.sh build
+./scripts/docker-service.sh start
+```
 
-## Provided scripts
+## initial import database
+```
+cd src_tileserver_scripts/
+./scripts/docker-service.sh stop
+./scripts/docker-service.sh import
+```
 
-### whichdiff.pl
-A perl script to determine the replication number for the first sequence.
-This is needed for bootstraping the replication process.
+note: you can check the size of docker volumes wwith following command "docker system df -v"
 
-### expiremeta.pl
-A perl script which will mark all meta-tiles read from osm2pgsql tile expire
-file for re-rendering.
+sample
+```
+VOLUME NAME                    LINKS               SIZE
+openstreetmap-flat             1                   56.47GB
+openstreetmap-rendered-tiles   0                   0B
+openstreetmap-db               2                   817.9GB
+```
 
-### expirehrb
-A shell script which will mark our special small area Sorbian meta-tiles for re-rendering
-based on the ones marked by expiremeta.pl.
 
-### osm-replicate.service
-Systemd service-file for running replicate-loop.sh
+## backup
+t.b.d
 
-### osm-replicate.timer
-Systemd timer-file for calling osm-replicate.service
+## restore
+t.b.d
 
-### replicate-loop.sh
+## prepare first update procedure
 
-A shell script which fetches diff-files from OSM Planet server using pyosmium-get-changes
-and feed them to osm2pgsql afterwards. It will also call tile expire scripts
-if requested. This script is intended to be called from a cronjob or
-(recommend) from the provided systemd service and timer files. If you
-intend to use this for your own tileserver you will likely need to slightly adapt
-this to your own requirements.
+### determine latest osmid in database
+you need to start and connect to the container first
+```
+cd src_tileserver_scripts/
+./scripts/docker-service.sh start
+./scripts/docker-service.sh connect
+```
+
+the following sample shows you how to determine latest osmid in database
+```
+root@osmdbutils:/replication# ./scripts/determine_latest_osmid.sh
+    max     
+------------
+ 7058904685
+(1 row)
+```
+
+### determine initial sequence number for update procedure
+```
+root@osmdbutils:/replication# ./scripts/whichdiff.pl 7058904685
+.
+.
+.
+check http://planet.openstreetmap.org/replication/minute//003/804/437.osc.gz
+firstnode 003/804/437.osc.gz = 7058902376
+node 7058904685 found in file 003/804/437.osc.gz
+therefore, use status file 003/804/427.state.txt:#Mon Dec 16 01:58:03 UTC 2019
+sequenceNumber=3804427
+txnMaxQueried=2483240379
+txnActiveList=
+txnReadyList=
+txnMax=2483240379
+timestamp=2019-12-16T01\:58\:02Z
+```
+
+note: the sequence number is 3804427
+
+### create sequence file
+```
+root@osmdbutils:/replication# mkdir ./work/data/             
+root@osmdbutils:/replication# echo 3804427 > ./work/data/sequence_file
+```
+### start update processes
+
+the following sample shows how to start the update process
+```
+root@osmdbutils:/replication# service cron start
+[ ok ] Starting periodic command scheduler: cron.
+```
+
+you can check the procedure with command:
+```
+root@osmdbutils:/replication# tail -f work/replication.log
+```
+
+sample output:
+```
+root@osmdbutils:/replication# tail -f work/replication.log
+[INFO ] 2020-01-07.07:10:01 bgn replication Tue Jan  7 07:10:01 UTC 2020
+[INFO ] 2020-01-07.07:10:02 start update: osmosis replication is 31903 minutes behind upstream
+[INFO ] 2020-01-07.07:10:02 make backup copy of sequence_file
+[INFO ] 2020-01-07.07:10:02 bgn: pyosmium-get-changes sequence=3804427
+```
