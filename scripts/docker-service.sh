@@ -11,7 +11,7 @@ docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
 		--detach \
-		--memory=32G \
+		--memory=96G \
 		--hostname osmdbutils \
 		--link osm-tileserver-db:osm-tileserver-db \
 		-v openstreetmap-flat:/nodes \
@@ -29,7 +29,7 @@ docker run \
 		--name $IMAGE_NAME \
 		--rm=false \
 		--detach \
-		--memory=32G \
+		--memory=96G \
 		--hostname osmdbutils \
 		--link osm-tileserver-db:osm-tileserver-db \
 		-v openstreetmap-flat:/nodes \
