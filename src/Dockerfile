@@ -20,14 +20,28 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     procps \
     nano mc psmisc \
     postgresql-client \
-    osm2pgsql  \
     python3-pyosmium \
     osmium-tool \
     libipc-sharelite-perl libjson-perl libgd-gd2-perl libwww-perl \
+    make cmake g++ libboost-dev libboost-system-dev \
+    libboost-filesystem-dev libexpat1-dev zlib1g-dev \
+    libbz2-dev libpq-dev libproj-dev lua5.3 liblua5.3-dev pandoc \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/lib/python3-pyosmium/pyosmium-get-changes /usr/local/bin/pyosmium-get-changes
 
 RUN pip install pyYAML
+
+
+# build osm2psql
+RUN mkdir -p /replication/src
+WORKDIR /replication/src
+RUN git clone https://github.com/openstreetmap/osm2pgsql \
+    && cd osm2pgsql \
+    && git checkout 1.5.0 \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make \
+    && make install
 
 
 # Configure stylesheet
