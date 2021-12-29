@@ -26,11 +26,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     make cmake g++ libboost-dev libboost-system-dev \
     libboost-filesystem-dev libexpat1-dev zlib1g-dev \
     libbz2-dev libpq-dev libproj-dev lua5.3 liblua5.3-dev pandoc \
+    python3-dev\ 
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/lib/python3-pyosmium/pyosmium-get-changes /usr/local/bin/pyosmium-get-changes
 
 RUN pip install pyYAML
 
+RUN pip3 install wheel psycopg2
 
 # build osm2psql
 RUN mkdir -p /replication/src
@@ -62,6 +64,7 @@ RUN mkdir -p /replication/scripts
 COPY run.sh /replication/scripts
 COPY whichdiff.pl /replication/scripts
 COPY replicate-loop.sh /replication/scripts
+COPY replicate-db.sh /replication/scripts
 COPY determine_latest_osmid.sh /replication/scripts
 COPY initial-import.sh /replication/scripts
 COPY create_indexes.sh /replication/scripts
@@ -74,7 +77,7 @@ RUN chmod +x /replication/scripts/*.sh \
 && chown root:root /replication/scripts/*.sh \
 && chown root:root /replication/scripts/*.pl
 
-RUN echo "*/5 * * * *   root    /replication/scripts/replicate-loop.sh\n" >> /etc/crontab
+RUN echo "*/5 * * * *   root    /replication/scripts/replicate-db.sh\n" >> /etc/crontab
 
 # Start running
 ENTRYPOINT ["/replication/scripts/run.sh"]

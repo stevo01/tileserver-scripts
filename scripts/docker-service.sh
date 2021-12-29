@@ -20,7 +20,7 @@ docker run \
 		-v $PWD/volumes/work:/replication/work \
 		-v $PWD/volumes/download:/replication/download \
 		-v $PWD/volumes/backup:/backup \
-		$IMAGE_NAME \
+		--network proxy $IMAGE_NAME \
 		run
 }
 
