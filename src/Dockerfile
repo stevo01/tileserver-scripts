@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:13
 
 ENV DEBIAN_FRONTEND=noninteractive
 # deps
@@ -16,29 +16,19 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     pandoc 
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-       python3-wheel python3-psycopg2 python3-yaml 
+       python3-wheel python3-psycopg2 python3-yaml \
+       osm2pgsql node-carto iputils-ping gdal-bin unzip
 
-#RUN rm -rf /var/lib/apt/lists/*
-
-# Python libs
-# RUN pip3 install --no-cache-dir wheel psycopg2 pyyaml
-
-# build osm2pgsql
-RUN mkdir -p /replication/src
 WORKDIR /replication/src
-RUN git clone https://github.com/openstreetmap/osm2pgsql && \
-    cd osm2pgsql && \
-    git checkout 1.5.0 && \
-    mkdir build && cd build && \
-    cmake .. && make -j"$(nproc)" && make install
+RUN git clone https://github.com/gravitystorm/openstreetmap-carto \
+    && cd openstreetmap-carto \
+    && git pull --all \
+    && git switch --detach v5.9.0 \
+    && carto -v
 
-# stylesheet
-WORKDIR /replication/src
-RUN git clone https://github.com/gravitystorm/openstreetmap-carto.git && \
-    git -C openstreetmap-carto checkout v4.23.0
-WORKDIR /replication/src/openstreetmap-carto
-RUN npm install -g carto@0.18.2 && \
-    carto project.mml > /replication/src/openstreetmap-carto/mapnik.xml
+WORKDIR   /replication/src/openstreetmap-carto 
+RUN carto /replication/src/openstreetmap-carto/project.mml > /replication/src/openstreetmap-carto/mapnik.xml
+
 
 # scripts + timer
 WORKDIR /replication
