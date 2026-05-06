@@ -12,6 +12,8 @@ MINZOOM=14
 MAXZOOM=16
 LOGFILE=/replication/work/replication.log
 
+export PATH=$PATH:/usr/lib/python3-pyosmium
+
 export PGPASSWORD=renderer
 PG_USER=renderer
 PG_DBNAME=gis
@@ -128,7 +130,22 @@ fi
 
 log_info "start osm2pgsql"
 
-if osm2pgsql -U $PG_USER -H $PG_HOST -d $PG_DBNAME -G -a -s --number-processes=1 -C16000 -S $STYLE --flat-nodes $FLATNODEFILE -e $MINZOOM-$MAXZOOM -o $EXPIRELOG --expire-bbox-size 20000 --hstore --tag-transform-script $LUA $MERGEDFILE 2>&1 | tee -a $OSMPGSQL_LOGFILE
+if osm2pgsql \
+    -U "$PG_USER" \
+    -H "$PG_HOST" \
+    -d "$PG_DBNAME" \
+    --append \
+    --slim \
+    --hstore \
+    --number-processes=1 \
+    -C 16000 \
+    --style "$STYLE" \
+    --flat-nodes "$FLATNODEFILE" \
+    -e "$MINZOOM-$MAXZOOM" \
+    -o "$EXPIRELOG" \
+    --expire-bbox-size 20000 \
+    --tag-transform-script "$LUA" \
+    "$MERGEDFILE" 2>&1 | tee -a "$OSMPGSQL_LOGFILE"
 then
    log_info "osm2pgsql passed"
    rm $MERGEDFILE
