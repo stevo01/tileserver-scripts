@@ -10,11 +10,10 @@ services:
     restart: "no"
     command: run
     volumes:
-      - /media/data2/openstreetmap-flat-nodes:/nodes
-      - /media/data2/openstreetmap-db:/var/lib/postgresql/11/main:ro
+      - ./volumes/openstreetmap-flat-nodes:/nodes
       - ./volumes/transfer:/transfer
       - ./volumes/work:/replication/work
-      - /media/data2/openstreetmap-downloads:/replication/download
+      - ./volumes/openstreetmap-downloads:/replication/download
       - ./volumes/backup:/backup
     networks:
       - tile-postgis-network

@@ -35,7 +35,7 @@ WORKDIR /replication
 RUN mkdir -p /replication/scripts
 COPY run.sh /replication/scripts/
 COPY whichdiff.pl replicate-loop.sh replicate-db.sh determine_latest_osmid.sh \
-     initial-import.sh create_indexes.sh update_indexes.sh create_backup.sh /replication/scripts/
+     initial-import.sh create_indexes.sh create_backup.sh /replication/scripts/
 COPY osm-replicate.service /etc/systemd/system
 COPY osm-replicate.timer   /etc/systemd/system
 
